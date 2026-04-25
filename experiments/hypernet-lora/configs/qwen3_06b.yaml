@@ -1,0 +1,38 @@
+model:
+  name: Qwen/Qwen3-0.6B-Base
+  attn_impl: sdpa            # flash_attention_2 at >=4B
+  activation_checkpoint: false
+
+data:
+  dataset: HuggingFaceFW/fineweb-edu
+  snapshot: CC-MAIN-2025-26
+  niah_filler_snapshot: CC-MAIN-2025-21
+  context_len: 4096
+  continuation_len: 512
+  min_doc_tokens: 4608
+
+lora:
+  rank: 16
+  alpha: 16
+  targets: [q_proj, k_proj, v_proj, o_proj, gate_proj, up_proj, down_proj]
+
+hypernet:
+  trunk_dim: 512
+  trunk_layers: 2
+
+train:
+  distribution: ddp           # ddp | fsdp
+  max_steps: 10000
+  batch_size: 4
+  grad_accum: 1
+  lr: 3.0e-4
+  warmup_steps: 200
+  scheduler: cosine
+  grad_clip: 1.0
+  eval_every: 500
+  checkpoint_every: 1000
+  seed: 42
+
+logging:
+  wandb_project: hypernet-lora
+  wandb_run_name: qwen3_06b_r16_mvp

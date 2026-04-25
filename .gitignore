@@ -1,0 +1,26 @@
+# Secrets
+.env
+.env.*
+*.pem
+*.key
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.pytest_cache/
+
+# ML / experiment artifacts
+checkpoints/
+wandb/
+runs/
+.cache/
+*.pt
+*.safetensors
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/
