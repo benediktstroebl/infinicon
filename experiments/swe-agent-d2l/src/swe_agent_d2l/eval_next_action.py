@@ -16,7 +16,7 @@ from tqdm import tqdm
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
 from .batching import collate_eval
-from .config import load_yaml
+from .config import load_yaml, torch_dtype
 from .hyper_lora import (
     HyperLoRAConfig,
     TrajectoryHyperNetwork,
@@ -47,7 +47,7 @@ def main() -> None:
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     base = AutoModelForCausalLM.from_pretrained(
         cfg["model"]["name"],
-        torch_dtype=_torch_dtype(cfg["model"].get("torch_dtype", "bfloat16")),
+        torch_dtype=torch_dtype(cfg["model"].get("torch_dtype", "bfloat16")),
         attn_implementation=cfg["model"].get("attn_implementation", "sdpa"),
         trust_remote_code=True,
     ).to(device).eval()
@@ -167,8 +167,10 @@ def eval_batch(
     out = []
     for i in range(input_ids.shape[0]):
         denom = tail_nll[i] - oracle_nll[i]
-        gap = (tail_nll[i] - adapter_nll[i]) / denom if torch.isfinite(denom) and abs(float(denom)) > 1e-8 else torch.tensor(float("nan"))
-        bad_gap = (tail_nll[i] - bad_nll[i]) / denom if torch.isfinite(denom) and abs(float(denom)) > 1e-8 else torch.tensor(float("nan"))
+        denom_ok = torch.isfinite(denom) and abs(float(denom)) > 1e-8
+        nan = torch.tensor(float("nan"))
+        gap = (tail_nll[i] - adapter_nll[i]) / denom if denom_ok else nan
+        bad_gap = (tail_nll[i] - bad_nll[i]) / denom if denom_ok else nan
         out.append(
             {
                 "tail_nll": float(tail_nll[i].cpu()),
@@ -209,14 +211,6 @@ def _tool_name(value: Any) -> str:
     if value:
         return str(value[0])
     return "none"
-
-
-def _torch_dtype(name: str) -> torch.dtype:
-    if name == "float16":
-        return torch.float16
-    if name == "float32":
-        return torch.float32
-    return torch.bfloat16
 
 
 if __name__ == "__main__":

@@ -15,7 +15,7 @@ from tqdm import tqdm
 from transformers import AutoModelForCausalLM, AutoTokenizer, get_cosine_schedule_with_warmup
 
 from .batching import collate_train
-from .config import load_yaml
+from .config import load_yaml, torch_dtype
 from .hyper_lora import (
     HyperLoRAConfig,
     TrajectoryHyperNetwork,
@@ -56,7 +56,7 @@ def main() -> None:
 
     base = AutoModelForCausalLM.from_pretrained(
         cfg["model"]["name"],
-        torch_dtype=_torch_dtype(cfg["model"].get("torch_dtype", "bfloat16")),
+        torch_dtype=torch_dtype(cfg["model"].get("torch_dtype", "bfloat16")),
         attn_implementation=cfg["model"].get("attn_implementation", "sdpa"),
         trust_remote_code=True,
     )
@@ -178,14 +178,6 @@ def _save(accelerator: Accelerator, hypernet: TrajectoryHyperNetwork, path: Path
         return
     unwrapped = accelerator.unwrap_model(hypernet)
     torch.save(hyper_lora_state_dict(unwrapped, extra={"config": cfg}), path)
-
-
-def _torch_dtype(name: str) -> torch.dtype:
-    if name == "float16":
-        return torch.float16
-    if name == "float32":
-        return torch.float32
-    return torch.bfloat16
 
 
 if __name__ == "__main__":

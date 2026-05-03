@@ -178,11 +178,11 @@ _SCHEMA_BY_NAME = {tool["function"]["name"]: tool for tool in TOOL_SCHEMAS}
 
 
 def is_known_tool(name: str | None) -> bool:
-    return bool(name) and name in KNOWN_TOOL_NAMES
+    return name in KNOWN_TOOL_NAMES
 
 
 def is_excluded_tool(name: str | None) -> bool:
-    return bool(name) and name in EXCLUDED_TOOL_NAMES
+    return name in EXCLUDED_TOOL_NAMES
 
 
 def required_args(tool_name: str) -> set[str]:
