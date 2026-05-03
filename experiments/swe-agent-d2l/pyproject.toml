@@ -1,0 +1,33 @@
+[project]
+name = "swe-agent-d2l"
+version = "0.0.1"
+description = "SWE-chat trajectory internalization with a Doc-to-LoRA-style hypernetwork."
+requires-python = ">=3.11"
+dependencies = [
+  "accelerate>=0.34",
+  "datasets>=3.0",
+  "jinja2>=3.1",
+  "numpy>=1.26",
+  "pandas>=2.2",
+  "pyarrow>=15.0",
+  "pyyaml>=6.0",
+  "torch>=2.5",
+  "tqdm>=4.66",
+  "transformers>=4.51.0",
+  "wandb>=0.18",
+]
+
+[project.optional-dependencies]
+test = ["pytest>=8.0"]
+flash = ["flash-attn>=2.6"]
+
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]

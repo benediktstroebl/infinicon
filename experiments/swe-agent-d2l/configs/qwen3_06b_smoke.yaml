@@ -1,0 +1,32 @@
+model:
+  name: Qwen/Qwen3-0.6B
+  torch_dtype: bfloat16
+  attn_implementation: sdpa
+  enable_thinking: false
+
+lora:
+  rank: 8
+  alpha: 16.0
+  target_modules: ["down_proj"]
+
+hypernet:
+  trunk_dim: 512
+  trunk_layers: 2
+
+train:
+  output_dir: outputs/qwen3_06b_swechat_d2l_smoke
+  max_steps: 1000
+  batch_size: 1
+  grad_accum: 8
+  lr: 3.0e-4
+  warmup_steps: 100
+  grad_clip: 1.0
+  log_every: 10
+  save_every: 250
+  seed: 42
+  use_teacher_kl: true
+  top_k: 64
+
+data:
+  max_ctx_tokens: 32768
+  max_input_tokens: 4608
