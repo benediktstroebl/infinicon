@@ -1,0 +1,10 @@
+data/
+outputs/
+checkpoints/
+wandb/
+.wandb/
+*.pt
+*.safetensors
+__pycache__/
+*.egg-info/
+.pytest_cache/
