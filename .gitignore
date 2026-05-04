@@ -24,3 +24,4 @@ runs/
 .DS_Store
 .idea/
 .vscode/
+experiments/swe-agent-d2l/uv.lock
